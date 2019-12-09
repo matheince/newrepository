@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "392986565456",
+    "firebase_url": "https://howlslecture.firebaseio.com",
+    "project_id": "howlslecture",
+    "storage_bucket": "howlslecture.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392986565456:android:a40bb6351f2fc3c1f86a55",
+        "android_client_info": {
+          "package_name": "com.example.howlslecture"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "392986565456-r6gb2etcehqlo9in24q57g86gqbfl9ri.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.howlslecture",
+            "certificate_hash": "37bb97a72a0e76ba273e1afa511e7de3355f4957"
+          }
+        },
+        {
+          "client_id": "392986565456-gt92f13rh2uoh05m33bal4r4e93v4h7d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfYvpG6rjgF5Jn1TBiZOQ65Tkq-DVdfvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "392986565456-gt92f13rh2uoh05m33bal4r4e93v4h7d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

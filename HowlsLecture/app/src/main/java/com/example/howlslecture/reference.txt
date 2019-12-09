@@ -1,0 +1,9 @@
+1. 프로젝트 만들기
+   HowlsLecture(com.example.howlslecture
+2. Firebase 연결하기
+   Howlslecture 프로젝트에 연결.
+   database 연결하기 gradle 파일에
+      implementation 'com.google.firebase:firebase-database:16.0.4' 추가.
+3. dependences 에 Material implement 안해서 run되지 않음
+   TextInputLayout 사용위해선 다음의 내용을 넣어야 함.
+   implementation 'com.google.android.material:material:1.0.0'
