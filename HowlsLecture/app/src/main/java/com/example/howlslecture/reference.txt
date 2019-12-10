@@ -1,50 +1,22 @@
-1. 구글 로그인
-   파이어베이스에서 Authentication에서 로그인방법중 구글 사용설정함.
-   -구글 인증 라이브러리 추가.
-    1) 파이어베이스의 문서로 이동후
-      a) 안드로이드 시작하기 선택
-      b) 하단에 "인증"
-      c) 구글 로그인 인증 선택
-      다음코드를 gradle 파일 넣고 sync 시켜줌
-         implementation 'com.google.android.gms:play-services-auth:17.0.0'
-    2. LoginActivity.kt 로 이동 구글 로그인 시켜줌.
-           var googleSignInClient : GoogleSignInClient? = null 선언 전역(onCreate() 함수 바깥에
+1. Hash key 값 만들기
+   다음 코드를 넣어줌 onCreate() 함수 밑에 넣고, convert kotlin 해줌(alt+Enter)
 
-
-        a) onCreate() 내에 변수 선언
-           var gsp = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                       .requestIdToken(getString(R.string.default_web_client_id))
-                       .requestEmail()
-                       .build()   // 코드를 끝내겠다. 조립 완성
-           googleSignInClient = GoogleSignIn.getClient(this,gso)
-        b) 함수 implement
-           fun googleLogin(){
-                   var signInIntent = googleSignInClient?.signInIntent
-                   startActivityForResult(signInIntent,GOOGLE_lOGIN_CODE)
-
+   public static void printHashKey(Context pContext) {
+           try {
+               PackageInfo info = pContext.getPackageManager().getPackageInfo(pContext.getPackageName(), PackageManager.GET_SIGNATURES);
+               for (Signature signature : info.signatures) {
+                   MessageDigest md = MessageDigest.getInstance("SHA");
+                   md.update(signature.toByteArray());
+                   String hashKey = new String(Base64.encode(md.digest(), 0));
+                   Log.i("Leegun", "printHashKey() Hash Key: " + hashKey);
                }
-           GOOGLE_lOGIN_CODE 에 빨간줄 뜨면 전역변수로 선언 임의의 값 넣어줌
-           var GOOGLE_lOGIN_CODE = 9001
-        c) activity_login.xml로 이동 구글 버튼에 id 생성.
-           - onCreate() 함수내에 다음 코드를 넣음
-              google_sign_in_button.setOnClickListener {
-                          googleLogin()
-                      }
-        d) 다음 코드로 구글 로그인 결과를 받아 firebase에 사용자 등록
-
-           fun firebaseAuthWithGoogle(accout : GoogleSignInAccount){
-                 var credential = GoogleAuthProvider.getCredential(accout.idToken,null)
-                 auth.signInWithCredential(credential)
+           } catch (NoSuchAlgorithmException e) {
+               Log.e("Leegun", "printHashKey()", e);
+           } catch (Exception e) {
+               Log.e("Leegun", "printHashKey()", e);
            }
-           override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-                   super.onActivityResult(requestCode, resultCode, data)
-                   if(requestCode==GOOGLE_lOGIN_CODE){
-                       var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-                       if(result.isSuccess){
-                           var accout = result.signInAccount
-                           firebaseAuthWithGoogle(accout!!)
-                       }
-                   }
-           }
+       }
+   다음의 코드는 onCreate()함수 내에 넣어줌
+     printHashKey(this)
 
-
+   Logcat 창에서 verbose 값에 Leegun 넣어주면 hash key 값 얻을 수 있음. ( N7uXpyoOdronPhr6UR594zVfSVc= )

@@ -1,5 +1,6 @@
 package com.example.howlslecture
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +14,20 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.activity_login.*
+import com.google.android.gms.common.util.IOUtils.toByteArray
+import android.provider.SyncStateContract.Helpers.update
+import android.content.pm.PackageManager
+
+import android.content.pm.PackageInfo
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.util.Base64
+import android.util.Log
+import androidx.fragment.app.FragmentActivity
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -35,8 +50,25 @@ class LoginActivity : AppCompatActivity() {
             .requestEmail()
             .build()   // 코드를 끝내겠다. 조립 완성
         googleSignInClient = GoogleSignIn.getClient(this,gso)
-
+        //printHashKey(this)
     }
+ /*   fun printHashKey(pContext: Context) {
+        try {
+            val info = pContext.getPackageManager()
+                .getPackageInfo(pContext.getPackageName(), PackageManager.GET_SIGNATURES)
+            for (signature in info.signatures) {
+                val md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                val hashKey = String(Base64.encode(md.digest(), 0))
+                Log.i("Leegun", "printHashKey() Hash Key: $hashKey")
+            }
+        } catch (e: NoSuchAlgorithmException) {
+            Log.e("Leegun", "printHashKey()", e)
+        } catch (e: Exception) {
+            Log.e("Leegun", "printHashKey()", e)
+        }
+
+    } */
     fun createloginandemail() {
         auth.createUserWithEmailAndPassword(
             emailEdittext.text.toString(),
@@ -81,8 +113,8 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent,GOOGLE_lOGIN_CODE)
 
     }
-    fun firebaseAuthWithGoogle(accout : GoogleSignInAccount){
-        var credential = GoogleAuthProvider.getCredential(accout.idToken,null)
+    fun firebaseAuthWithGoogle(account : GoogleSignInAccount){
+        var credential = GoogleAuthProvider.getCredential(account.idToken,null)
         auth.signInWithCredential(credential)
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -90,8 +122,8 @@ class LoginActivity : AppCompatActivity() {
         if(requestCode==GOOGLE_lOGIN_CODE){
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if(result.isSuccess){
-                var accout = result.signInAccount
-                firebaseAuthWithGoogle(accout!!)
+                var account = result.signInAccount
+                firebaseAuthWithGoogle(account!!)
             }
         }
     }
