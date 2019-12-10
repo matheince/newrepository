@@ -1,9 +1,19 @@
-1. 프로젝트 만들기
-   HowlsLecture(com.example.howlslecture
-2. Firebase 연결하기
-   Howlslecture 프로젝트에 연결.
-   database 연결하기 gradle 파일에
-      implementation 'com.google.firebase:firebase-database:16.0.4' 추가.
-3. dependences 에 Material implement 안해서 run되지 않음
-   TextInputLayout 사용위해선 다음의 내용을 넣어야 함.
-   implementation 'com.google.android.material:material:1.0.0'
+1. firebase에서 콘솔로 이동(HowlsLecture) Authentication에서 로그인 방법을 설정
+   - 비빌번호 로그인 및 구글로그인 사용설정함(프로젝트 지원 이메일에 자신의 이메일을 적는다)
+2. LoginActivity로 이동
+   - Auth variable 초기화
+     lateinit var auth : FirebaseAuth 로 해결
+3. moveMainPage(auth.currentUser) 의 currentUser에 빨간중이 뜨면 밑에 함수안에 FirebaseUser? 물음표 넣어줌으로 해결
+
+               } else {
+                   Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
+               }
+           }
+       }
+       fun moveMainPage(user : FirebaseUser?){
+               if(user!=null){
+                   startActivity(Intent(this,MainActivity::class.java))
+               }
+           }
+
+4.

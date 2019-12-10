@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <EditText
-
+                android:id="@+id/emailEdittext"
                 android:hint="@string/email"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></EditText>
@@ -33,12 +33,15 @@
             android:layout_height="match_parent">
 
             <EditText
+                android:inputType="textPassword"
+                android:id="@+id/passwordEdittext"
                 android:hint="@string/password"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></EditText>
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
+            android:id="@+id/emailloginButton"
             android:theme="@style/ButtonStyle"
             android:text="@string/signin_email"
             android:layout_width="match_parent"
