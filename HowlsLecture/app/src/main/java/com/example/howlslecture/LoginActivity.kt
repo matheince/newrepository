@@ -117,6 +117,11 @@ class LoginActivity : AppCompatActivity() {
         var credential = GoogleAuthProvider.getCredential(account.idToken,null)
         auth.signInWithCredential(credential)
     }
+
+    override fun onResume() {
+        super.onResume()
+        moveMainPage(auth.currentUser)
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode==GOOGLE_lOGIN_CODE){
