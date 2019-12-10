@@ -53,6 +53,7 @@
             android:layout_marginTop="30dp"></Button>
 
         <Button
+            android:id="@+id/google_sign_in_button"
             android:textColor="@color/colorWhite"
            android:background="@drawable/btn_signin_google"
             android:text="@string/signin_google"
