@@ -1,71 +1,24 @@
-1. AddPhotoActivity 만들고 xml에 디자인 적용.
-   - activity_add_photo.xml 로 이동
-2. AddPhotoActivity.kt 에 사진을 넣는 코드 작성
-   - 사진을 불러올수 있는 권한 부여 MainActivity.kt 에서 해줌
-   - onCreate() 함수 내에 다음 코드를 작성
-     ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),1)
-     Manifests 파일에
-     package="com.example.howlslecture">
-         <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> <=== 다음 문장을 추가
-         \refs_image\ref_1.jpg로 확인 가능
-
-3. AddPhotoActivity.kt로 이동 사진모양의 아이콘 클릭 이벤트 중.
-    - class AddPhotoActivity : AppCompatActivity() {
-          val PICK_IMAGE_FROM_ALBUM = 0
-          override fun onCreate(savedInstanceState: Bundle?) {
-
-              super.onCreate(savedInstanceState)
-              setContentView(R.layout.activity_add_photo)
-
-              var photoPickerIntent = Intent(Intent.ACTION_PICK)
-              photoPickerIntent.type = "image/*"
-              startActivityForResult(photoPickerIntent,PICK_IMAGE_FROM_ALBUM)
+1.데이터베이스 등록
+  데이터 모듈이 필요함.(DTO)
+  New -> Package -> model
+  - ContentDTO 열어서 class 정의
+2. AddPhotoActivity.kt 열어서
+   storageRef?.putFile(photoUri!!)?.addOnSuccessListener { taskSnapshot ->
+               Toast.makeText(this,getString(R.string.upload_success),Toast.LENGTH_LONG).show()
+           }
+   위의 taskSnapshot -> 은 addOnSuccessListener 나왔을 때 ctrl + Spacebar 눌러 입력 함.
+3. AddPhotoActivity.kt 이동 contentDTO 에 FirebaseStorage에 기록된 내용을 가져 옴.
 
 
-          }
-      }
-    - MainActivity.kt로 이동 action_add_photo에 다음 코드를 넣어줌
-      R.id.action_add_photo -> {
-                      startActivity(Intent(this,AddPhotoActivity::class.java))  <====
-
-                      return true
-                  }
-
-4. AddPhotoActivity.kt로 이동 그림을 넣어 줌
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            super.onActivityResult(requestCode, resultCode, data)
-            if (requestCode == PICK_IMAGE_FROM_ALBUM) {
-                if (resultCode == Activity.RESULT_OK) {       <== requestCode, resultCode 혼동하면 안됨.....
-                    addphoto_image.setImageURI(data?.data)
-                }
-            }
-    }
-5. Firebase에 사진 올리기
-   - 파이어베이스 프로젝트 선택 후
-   - Firebase Storage 선택
-     - 보안 인증 후 버킷 생성 다음 \ref_image\ref_2와 같은 모습이 됨
-     - Android Studio 에서 Firebase(Tool) 실행 후 Storage 항목 선택, 2번의 Add Cloud Storage to you app 실행
-       \ref_image\ref_3 참고.
-   AddPhotoActivity.kt 파일 안에 다음 코드 작성
-       - 전역 변수 선언
-         var storage : FirebaseStorage? = null
-       - onCreate() 함수 내에
-         storage = FirebaseStorage.getInstance()  // 초기화
-       - 파일 이름을 불러올 전역 변수 선언
-            var photoUri : Uri? = null
-       - 36번 줄에 다음을 넣어 줌
-           photoUri = data?.data
-
-       - image_upload_btn.setOnClickListener {
-                     contentUpload()
-         }
-
-       - fun contentUpload(){
-                val timeStamp = SimpleDateFormat("yyyymmdd_hhmmss").format(Date())
-                val imageFileName = "JPEG_" + timeStamp + "_.png"
-                val storageRef = storage?.reference?.child("images")?.child(imageFileName)
-                storageRef?.putFile(photoUri!!)?.addOnSuccessListener {
-                    Toast.makeText(this,getString(R.string.upload_success),Toast.LENGTH_LONG).show()
-                }
-
-         }
+4. Firebase Store 에서 Add Cloud Firestore to your app 연결 gradle에 라이브러리 추가.
+   - 전역변수로 다음 선언
+     var firestore : FirebaseFirestore? = null
+   - Firebase database 에서 권한부여
+       규칙으로 이동 \ref_image\ref_4번 참조
+   - Firebase database 정상적으로 올라감
+     \ref_image\ref_5번 참조
+   - AddPhotoActivity.kt 내에 Howls 과 다른 코드로 6시간이상 헤맸음
+     Toast.makeText(this,getString(R.string.upload_success),Toast.LENGTH_LONG).show()
+                 // 업로드된 이미지 주소
+                 var contentDTO = ContentDTO()
+                 var uri = taskSnapshot.uploadSessionUri   <============== downloadUrl 은 없음.
