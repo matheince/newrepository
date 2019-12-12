@@ -1,24 +1,19 @@
 1.데이터베이스 등록
-  데이터 모듈이 필요함.(DTO)
-  New -> Package -> model
-  - ContentDTO 열어서 class 정의
-2. AddPhotoActivity.kt 열어서
-   storageRef?.putFile(photoUri!!)?.addOnSuccessListener { taskSnapshot ->
-               Toast.makeText(this,getString(R.string.upload_success),Toast.LENGTH_LONG).show()
-           }
-   위의 taskSnapshot -> 은 addOnSuccessListener 나왔을 때 ctrl + Spacebar 눌러 입력 함.
-3. AddPhotoActivity.kt 이동 contentDTO 에 FirebaseStorage에 기록된 내용을 가져 옴.
 
+   **** 데이터베이스에 저장키위한 코드는
+   firestore?.collection("images")?.document()?.set(contentDTO)
+2. item_detail.xml 만들고 디자인
+   android 와 tools의 차이는
+        android =====> 앱이 실행하는 한 계속 보임
+        tools   =====> 개발시에만 보여짐.
+3. DetailViewFragment.kt 의 연결된 fragment_detail.xml 이 RecyclerView를 갖고 있게함.
+   fragment_detail.xml 이동후 LinearLayout 으로 바꿔줌 <========== 이것때문에 2일을 낭비함.
 
-4. Firebase Store 에서 Add Cloud Firestore to your app 연결 gradle에 라이브러리 추가.
-   - 전역변수로 다음 선언
-     var firestore : FirebaseFirestore? = null
-   - Firebase database 에서 권한부여
-       규칙으로 이동 \ref_image\ref_4번 참조
-   - Firebase database 정상적으로 올라감
-     \ref_image\ref_5번 참조
-   - AddPhotoActivity.kt 내에 Howls 과 다른 코드로 6시간이상 헤맸음
-     Toast.makeText(this,getString(R.string.upload_success),Toast.LENGTH_LONG).show()
-                 // 업로드된 이미지 주소
-                 var contentDTO = ContentDTO()
-                 var uri = taskSnapshot.uploadSessionUri   <============== downloadUrl 은 없음.
+4. DetailViewFragment.kt로 이동후
+    - inner class DetailRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){ 작성시
+       DetailRecyclerViewAdapter에 빨간줄 나올때 alt+Enter 키 누르고 implement 선택하면 자동 함수가 생성됨
+    - CustomDetailAdapter(view)에서 alt+Enter 키 누르고 2번째 create class 선택하면 나오는창에 DetailRecyclerViewAdapter 선택 ref_6사진 참조
+    inner class CustomDetailAdapter(view: View?) : RecyclerView.ViewHolder() {
+
+            }
+5.******************* 위 코드중 CustomDetailAdapter(view: View?) 의 View? ?제거후 성공. 4시간 걸렸음.
