@@ -1,19 +1,168 @@
-1.데이터베이스 등록
+1.FirebaseFirestore에 접근하기 위한 코드 작성
+   class  DetailViewFragment : Fragment(){
+      var firestore : FirebaseFirestore? = null  <=========== 선언
 
-   **** 데이터베이스에 저장키위한 코드는
-   firestore?.collection("images")?.document()?.set(contentDTO)
-2. item_detail.xml 만들고 디자인
-   android 와 tools의 차이는
-        android =====> 앱이 실행하는 한 계속 보임
-        tools   =====> 개발시에만 보여짐.
-3. DetailViewFragment.kt 의 연결된 fragment_detail.xml 이 RecyclerView를 갖고 있게함.
-   fragment_detail.xml 이동후 LinearLayout 으로 바꿔줌 <========== 이것때문에 2일을 낭비함.
+   - onCreate() 함수내에 초기화 꼭꼭!!
+         override fun onCreateView(
+             inflater: LayoutInflater,
+             container: ViewGroup?,
+             savedInstanceState: Bundle?
+         ): View? {
+             firestore = FirebaseFirestore.getInstance()   <============== 초기화 코드
 
-4. DetailViewFragment.kt로 이동후
-    - inner class DetailRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){ 작성시
-       DetailRecyclerViewAdapter에 빨간줄 나올때 alt+Enter 키 누르고 implement 선택하면 자동 함수가 생성됨
-    - CustomDetailAdapter(view)에서 alt+Enter 키 누르고 2번째 create class 선택하면 나오는창에 DetailRecyclerViewAdapter 선택 ref_6사진 참조
-    inner class CustomDetailAdapter(view: View?) : RecyclerView.ViewHolder() {
+2.  val contentDTOs : ArrayList<ContentDTO>?   <============= 밑에서 초기화하므로 null 값 지정을 안해줌
+    val contentUidList : ArrayList<String>?    <=============
+        init {
+               contentDTOs = ArrayList()     // contentDTOs 초기화
+               contentUidList = ArrayList()  // contentUidList 초기화
 
+     contentDTOs!!.add(item!!) !! 두개 넣어 오류 해결
+     contentUidList!!.add(snapshot.id)
+3. contendDTO에 들어가 있는 것을 하나씩 Mapping 해줌
+   - item_detail.xml 각각 id 부여
+4. DetailViewFragment.kt 에 이벤트 부여
+   -onBindViewHolder() 함수에 다음 코드를 넣어줌
+
+5. 참고 : 첫화면을 사용자 정의에 맞게 지정
+   MainActivity.kt 의 onCreate() 에 다음과 같이 지정.
+     bottom_navigation.selectedItemId = R.id.action_home
+
+
+
+
+    -viewholder.detailviewitem_count_textview.text = contentDTOs!![position].favoriteCount 빨간줄 나올 때
+     viewholder.detailviewitem_count_textview.text = contentDTOs!![position].favoriteCount.toString() 해줌
+     결과적으로 다음 코드로 함
+     viewholder.detailviewitem_count_textview.text = "좋아요 " + contentDTOs!![position].favoriteCount
+5.activity_main.xml 이동 화면 겹침 조정
+   툴바 id 가 my_toolbar2 이므로
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/main_content"
+            android:layout_above="@+id/bottom_navigation"   <<==============
+            android:layout_below="@+id/my_toolbar2">        <<==============
+
+    </FrameLayout>
+6. 이미지를 가져옴. 이미지 라이브러리 사용.
+   Glide com.github.bumptech.glide gradle에서 가져옴.
+   dependencies에 다음이 추가.
+   implementation 'com.github.bumptech.glide:glide:4.10.0'
+  - DetailViewFragment.kt 이동 다음 추가
+
+
+  tasksnapshot.getdownloadurl()에 관한 오류를 잡고 싶은 분들은 app 버전의 gradle에서 database 버전을 다운그레이드하면 사용 가능합니다!
+  버그를 잡을 방법을 몰라 예전 코드 참조해서 12.0.1로 변경하니 해당 메소드 사용가능합니다.
+ var uri = taskSnapshot.downloadUrl
+
+            var contentDTO = ContentDTO()
+            //이미지 주소
+            contentDTO.imageUrl = uri!!.toString()
+
+uploadSessionUrl :
+    "https://firebasestorage.googleapis.com/v0/b/howlslecture.appspot.com/o?name=images%2FJPEG_20195713_065723_.png&uploadType=resumable&upload_id=AEnB2UqijPR99b7yosH-5O9P5RLCvumqmUM4XuztanZZ5wgoQ0eW8hMHFwqcqDBbrYWHU6cMXyWEMicrcGVUJfAFY_6BSuIClQ&upload_protocol=resumable"
+    (문자열)
+    timestamp
+    1576220246425
+    uid
+    "HssFkubixbcHykCygbaeCuVsoYH3"
+    userID
+    "comyoung21@gmail.com"
+
+
+package com.howl.howlstagram
+
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.howl.howlstagram.R.id.addphoto_edit_explain
+import com.howl.howlstagram.model.ContentDTO
+import kotlinx.android.synthetic.main.activity_add_photo.*
+import java.text.SimpleDateFormat
+import java.util.*
+
+class AddPhotoActivity : AppCompatActivity() {
+    val PICK_IMAGE_FROM_ALBUM = 0
+    var storage: FirebaseStorage? = null
+    var photoUri: Uri? = null
+    var auth: FirebaseAuth? = null
+    var firestore: FirebaseFirestore? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_add_photo)
+
+        storage = FirebaseStorage.getInstance()
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+
+        var photoPickerIntent = Intent(Intent.ACTION_PICK)
+        photoPickerIntent.type = "image/*"
+        startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
+
+        addphoto_image.setOnClickListener {
+            var photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
+        }
+        addphoto_btn_upload.setOnClickListener {
+            contentUpload()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_FROM_ALBUM) {
+            if (resultCode == Activity.RESULT_OK) {
+                photoUri = data?.data
+                addphoto_image.setImageURI(data?.data)
+            } else {
+                finish()
             }
-5.******************* 위 코드중 CustomDetailAdapter(view: View?) 의 View? ?제거후 성공. 4시간 걸렸음.
+        }
+
+    }
+
+    fun contentUpload() {
+
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_.png"
+        val storageRef = storage?.reference?.child("images")?.child(imageFileName)
+
+        storageRef?.putFile(photoUri!!)?.addOnSuccessListener { taskSnapshot ->
+            Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_LONG).show()
+            //업로드된 이미지 주소
+            var uri = taskSnapshot.downloadUrl
+
+            var contentDTO = ContentDTO()
+            //이미지 주소
+            contentDTO.imageUrl = uri!!.toString()
+
+            //유저의 UID
+            contentDTO.uid = auth?.currentUser?.uid
+
+            //게시물 설명
+            contentDTO.explain = addphoto_edit_explain.text.toString()
+
+            //유저 아이디
+            contentDTO.userId = auth?.currentUser?.email
+
+            //게시물 업로드 시간
+            contentDTO.timestamp = System.currentTimeMillis()
+
+            firestore?.collection("images")?.document()?.set(contentDTO)
+
+            setResult(Activity.RESULT_OK)
+
+            finish()
+
+
+        }
+
+    }
+}
